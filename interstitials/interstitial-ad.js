@@ -1,3 +1,9 @@
+/**
+ * Interstitial code support
+ *
+ * @copyright State News, Inc.
+ * @author Mike Joseph <mike@getsnworks.com>
+ */
 (function($) {
     var _invokeAd = function() {
         var container = $('<div></div>')
