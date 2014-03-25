@@ -12,8 +12,8 @@
 
 ##
 ## Edit these values to reflect the authentication credentials for the
-## server running the CouchDB instance with which you wish to
-## connect. If you have chosen to run CouchDB on an alternate port,
+## server running the ElasticSearch instance with which you wish to
+## connect. If you have chosen to run ElasticSearch on an alternate port,
 ## modify the `$remote_port` value. You should not need to modify the
 ## `$remote_ip` value.
 ##
@@ -24,7 +24,7 @@ $remote_port = "9200";
 $remote_ip   = "127.0.0.1";
 
 ##
-## Modify these values only if you are running a local CouchDB
+## Modify these values only if you are running a local ElasticSearch
 ## instance.
 ##
 
