@@ -1,6 +1,12 @@
-This is how this works
+Analyzer
 ==========
 
-Because Travis doesn't know how.
+The start of something useful... possibly.
 
-### Headline
+Maybe.
+
+Anyway, the idea is that it will analyze Twig templates looking for common code smells. Right now it only looks for missing status checks in FETCH tags.
+
+## Install
+
+## Run
