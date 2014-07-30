@@ -1,0 +1,14 @@
+{
+    "name": "thesnews/analyzer",
+    "authors": [
+        {
+            "name": "Mike Joseph",
+            "email": "mike@statenews.com"
+        }
+    ],
+    "require": {
+        "symfony/finder": "2.6.*@dev",
+        "clio/clio": "dev-master",
+        "wp-cli/php-cli-tools": "dev-master"
+    }
+}
