@@ -1,0 +1,12 @@
+{
+    "name": "thesnews/duplicater",
+    "authors": [
+        {
+            "name": "Mike Joseph",
+            "email": "mike@statenews.com"
+        }
+    ],
+    "require": {
+        "wp-cli/php-cli-tools": "dev-master"
+    }
+}
