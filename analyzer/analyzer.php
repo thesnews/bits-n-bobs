@@ -29,6 +29,7 @@ $finder = new Symfony\Component\Finder\Finder;
 $i = $finder
     ->files()
     ->name('*.tpl')
+    ->exclude('attic')
     ->in($path);
 
 // $spinner = new \cli\notify\Spinner('Checking '.$path);
@@ -53,8 +54,12 @@ foreach( $i as $file ) {
     $lines = explode("\n", $contents);
     $in_fetch = false;
     $in_fetch_article = false;
-    $found_status = false;
-    $found_created = false;
+    $in_fetch_media = false;
+    $in_fetch_post = false;
+
+    $found_status               = false;
+    $found_created              = false;
+    $found_pub_after_weight     = false;
 
     $j = 0;
     foreach( $lines as $line ) {
@@ -67,32 +72,53 @@ foreach( $i as $file ) {
         if( $in_fetch && strpos($line, 'from article') !== false ) {
             $in_fetch_article = true;
         }
+        if( $in_fetch && strpos($line, 'from media') !== false ) {
+            $in_fetch_media = true;
+        }
+        if( $in_fetch && strpos($line, 'from blogPost') !== false ) {
+            $in_fetch_post = true;
+        }
 
-        if( $in_fetch && $in_fetch_article ) {
+        if( $in_fetch && ($in_fetch_article || $in_fetch_media || $in_fetch_post) ) {
             // verify status
             if( strpos($line, 'status') !== false ) {
                 $found_status = true;
             }
 
             if( strpos($line, 'created') !== false ) {
-                $found_status = true;
+                $found_created = true;
+            }
+
+            $i1 = strpos($line, 'weight');
+            $i2 = strpos($line, 'published');
+            if( $i1 !== false && $i2 !== false && $i1 > $i2 ) {
+                $found_pub_after_weight = true;
             }
         }
 
         if( $in_fetch && strpos($line, '%}') !== false ) {
-            if( $in_fetch_article && !$found_status ) {
+            if( ($in_fetch_article || $in_fetch_media || $in_fetch_post) && !$found_status ) {
                 $errors = true;
                 \cli\line('%C%1Missing Status%n: '.$file->getRealPath().':'.$j);
             }
 
-            if( $in_fetch_article && !$found_created ) {
+            if( ($in_fetch_article || $in_fetch_media || $in_fetch_post) && $found_created ) {
                 $errors = true;
                 \cli\line('%C%1Using create sorting%n: '.$file->getRealPath().':'.$j);
             }
 
+            if( ($in_fetch_article || $in_fetch_media || $in_fetch_post) && $found_pub_after_weight ) {
+                $errors = true;
+                \cli\line('%C%1Weight should be before date%n: '.$file->getRealPath().':'.$j);
+            }
+
             $in_fetch = false;
             $in_fetch_article = false;
+            $in_fetch_media = false;
+            $in_fetch_post = false;
             $found_status = false;
+            $found_created = false;
+            $found_pub_after_weight = false;
         }
     }
 }
@@ -103,9 +129,9 @@ foreach( $i as $file ) {
 
 \cli\line("");
 if( $errors ) {
-    \cli\line("%C%1\n\n        Dang. Errors found.\n%n");
+    \cli\line("%C%1\n\n Dang. Errors found.\n\n%n");
 } else {
-    \cli\line("%C%2\n\n        Yay, it's clean!\n%n");
+    \cli\line("%C%2\n\n Yay, it's clean!\n\n%n");
 }
 \cli\line("");
 // file_put_contents('./analyzer-results.txt', implode("\n", $errors));
