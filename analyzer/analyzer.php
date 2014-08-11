@@ -31,11 +31,11 @@ $i = $finder
     ->name('*.tpl')
     ->in($path);
 
-$spinner = new \cli\notify\Spinner('Checking '.$path);
+// $spinner = new \cli\notify\Spinner('Checking '.$path);
 
 $errors = array();
 foreach( $i as $file ) {
-    $spinner->tick();
+    // $spinner->tick();
     $continue = false;
 
     $contents = file_get_contents($file->getRealPath());
@@ -54,6 +54,7 @@ foreach( $i as $file ) {
     $in_fetch = false;
     $in_fetch_article = false;
     $found_status = false;
+    $found_created = false;
 
     $j = 0;
     foreach( $lines as $line ) {
@@ -68,14 +69,23 @@ foreach( $i as $file ) {
         }
 
         if( $in_fetch && $in_fetch_article ) {
+            // verify status
             if( strpos($line, 'status') !== false ) {
+                $found_status = true;
+            }
+
+            if( strpos($line, 'created') !== false ) {
                 $found_status = true;
             }
         }
 
         if( $in_fetch && strpos($line, '%}') !== false ) {
             if( $in_fetch_article && !$found_status ) {
-                $errors[] = 'MISSING STATUS: '.$file->getRealPath().':'.$j;
+                \cli\line('%1%CMissing Status%n: '.$file->getRealPath().':'.$j);
+            }
+
+            if( $in_fetch_article && !$found_created ) {
+                \cli\line('%1%CUsing create sorting%n: '.$file->getRealPath().':'.$j);
             }
 
             $in_fetch = false;
@@ -85,7 +95,7 @@ foreach( $i as $file ) {
     }
 }
 
-$spinner->finish('Done');
+// $spinner->finish();
 
-\cli\line('Writing results to analyzer-results.txt');
-file_put_contents('./analyzer-results.txt', implode("\n", $errors));
+\cli\line('Scan complete');
+// file_put_contents('./analyzer-results.txt', implode("\n", $errors));
