@@ -33,7 +33,7 @@ $i = $finder
 
 // $spinner = new \cli\notify\Spinner('Checking '.$path);
 
-$errors = array();
+$errors = false;
 foreach( $i as $file ) {
     // $spinner->tick();
     $continue = false;
@@ -81,11 +81,13 @@ foreach( $i as $file ) {
 
         if( $in_fetch && strpos($line, '%}') !== false ) {
             if( $in_fetch_article && !$found_status ) {
-                \cli\line('%1%CMissing Status%n: '.$file->getRealPath().':'.$j);
+                $errors = true;
+                \cli\line('%C%1Missing Status%n: '.$file->getRealPath().':'.$j);
             }
 
             if( $in_fetch_article && !$found_created ) {
-                \cli\line('%1%CUsing create sorting%n: '.$file->getRealPath().':'.$j);
+                $errors = true;
+                \cli\line('%C%1Using create sorting%n: '.$file->getRealPath().':'.$j);
             }
 
             $in_fetch = false;
@@ -98,4 +100,12 @@ foreach( $i as $file ) {
 // $spinner->finish();
 
 \cli\line('Scan complete');
+
+\cli\line("");
+if( $errors ) {
+    \cli\line("%C%1\n\n        Dang. Errors found.\n%n");
+} else {
+    \cli\line("%C%2\n\n        Yay, it's clean!\n%n");
+}
+\cli\line("");
 // file_put_contents('./analyzer-results.txt', implode("\n", $errors));
