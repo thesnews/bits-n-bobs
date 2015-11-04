@@ -1,6 +1,6 @@
 <?php
 
-require_once 'vendor/autoload.php';
+require_once __DIR__.'/vendor/autoload.php';
 
 \cli\Colors::enable();
 
@@ -95,6 +95,64 @@ foreach( $s->fetchAll() as $row ) {
     $s->execute(array($dupe_id));
 }
 
+$q = 'select * from gryphon_articlesAuthors';
+$s = $dbh->prepare($q);
+$s->execute();
+
+$all = array();
+
+foreach ($s->fetchAll() as $r) {
+    $spinner->tick();
+
+    $key = $r['article_id'].':'.$r['author_id'];
+    if (in_array($key, $all)) {
+        $q = 'delete from gryphon_articlesAuthors where article_id = ? and author_id = ? limit 1';
+        $s = $dbh->prepare($q);
+        $s->execute(array($r['article_id'], $r['author_id']));
+    }
+
+    $all[] = $key;
+
+}
+
+$q = 'select * from gryphon_authorsMedia';
+$s = $dbh->prepare($q);
+$s->execute();
+
+$all = array();
+
+foreach ($s->fetchAll() as $r) {
+    $spinner->tick();
+
+    $key = $r['media_id'].':'.$r['author_id'];
+    if (in_array($key, $all)) {
+        $q = 'delete from gryphon_authorsMedia where media_id = ? and author_id = ? limit 1';
+        $s = $dbh->prepare($q);
+        $s->execute(array($r['media_id'], $r['author_id']));
+    }
+    $all[] = $key;
+
+}
+
+$q = 'select * from gryphon_authorsBlogPosts';
+$s = $dbh->prepare($q);
+$s->execute();
+
+$all = array();
+
+foreach ($s->fetchAll() as $r) {
+    $spinner->tick();
+
+    $key = $r['blogPost_id'].':'.$r['author_id'];
+    if (in_array($key, $all)) {
+        $q = 'delete from gryphon_authorsBlogPosts where blogPost_id = ? and author_id = ? limit 1';
+        $s = $dbh->prepare($q);
+        $s->execute(array($r['blogPost_id'], $r['author_id']));
+    }
+    $all[] = $key;
+
+}
+
 $spinner->finish();
 
 $tag_map = array();
@@ -133,5 +191,62 @@ foreach( $s->fetchAll() as $row ) {
 }
 
 $spinner->finish();
+
+$q = 'select * from gryphon_articlesTags';
+$s = $dbh->prepare($q);
+$s->execute();
+
+$all = array();
+
+foreach ($s->fetchAll() as $r) {
+    $spinner->tick();
+
+    $key = $r['article_id'].':'.$r['tag_id'];
+    if (in_array($key, $all)) {
+        $q = 'delete from gryphon_articlesTags where article_id = ? and tag_id = ? limit 1';
+        $s = $dbh->prepare($q);
+        $s->execute(array($r['article_id'], $r['tag_id']));
+    }
+    $all[] = $key;
+
+}
+
+$q = 'select * from gryphon_mediaTags';
+$s = $dbh->prepare($q);
+$s->execute();
+
+$all = array();
+
+foreach ($s->fetchAll() as $r) {
+    $spinner->tick();
+
+    $key = $r['media_id'].':'.$r['tag_id'];
+    if (in_array($key, $all)) {
+        $q = 'delete from gryphon_mediaTags where media_id = ? and tag_id = ? limit 1';
+        $s = $dbh->prepare($q);
+        $s->execute(array($r['media_id'], $r['tag_id']));
+    }
+    $all[] = $key;
+
+}
+
+$q = 'select * from gryphon_blogPostsTags';
+$s = $dbh->prepare($q);
+$s->execute();
+
+$all = array();
+
+foreach ($s->fetchAll() as $r) {
+    $spinner->tick();
+
+    $key = $r['blogPost_id'].':'.$r['tag_id'];
+    if (in_array($key, $all)) {
+        $q = 'delete from gryphon_blogPostsTags where blogPost_id = ? and tag_id = ? limit 1';
+        $s = $dbh->prepare($q);
+        $s->execute(array($r['blogPost_id'], $r['tag_id']));
+    }
+    $all[] = $key;
+
+}
 
 \cli\line('Done!');
